@@ -1,21 +1,28 @@
-const router = require("express").Router();
-const db = require("../../data/db-config");
-const middleware = require("./accounts-middleware");
-const account = require("./accounts-model");
+// const router = require('express').Router()
+const express = require("express");
+const model = require("./accounts-model");
+const {
+  checkAccountPayload,
+  checkAccountNameUnique,
+  checkAccountId,
+} = require("./accounts-middleware");
+const router = express.Router();
 
 router.get("/", async (req, res, next) => {
+  // DO YOUR MAGIC
   try {
-    const accounts = await account.getAll();
-    res.json(accounts);
+    const account = await model.getAll();
+    res.status(200).json(account);
   } catch (err) {
     next(err);
   }
 });
 
-router.get("/:id", middleware.checkAccountId, async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
+  // DO YOUR MAGIC
   try {
-    const account = await account.getById(req.params.id);
-    res.json(account);
+    const account = await model.getById(req.params.id);
+    res.status(200).json(account);
   } catch (err) {
     next(err);
   }
@@ -23,12 +30,13 @@ router.get("/:id", middleware.checkAccountId, async (req, res, next) => {
 
 router.post(
   "/",
-  middleware.checkAccountNameUnique,
-  middleware.checkAccountPayload,
+  checkAccountPayload,
+  checkAccountNameUnique,
   async (req, res, next) => {
+    // DO YOUR MAGIC
     try {
-      const newAccount = await account.create(req.body.trim());
-      res.status(201).json(newAccount);
+      const post = await model.create(req.body);
+      res.status(201).json(post);
     } catch (err) {
       next(err);
     }
@@ -37,30 +45,35 @@ router.post(
 
 router.put(
   "/:id",
-  middleware.checkAccountId,
-  middleware.checkAccountPayload,
+  checkAccountPayload,
+  checkAccountId,
   async (req, res, next) => {
+    // DO YOUR MAGIC
     try {
-      const updated = await account.updateById(req.params.id, req.body);
-      res.json(updated);
+      const updateAccount = await model.updateById(req.params.id, req.body);
+      res.status(200).json(updateAccount);
     } catch (err) {
       next(err);
     }
   }
 );
 
-router.delete("/:id", middleware.checkAccountId, async (req, res, next) => {
+router.delete("/:id", checkAccountPayload, async (req, res, next) => {
+  // DO YOUR MAGIC
   try {
-    await account.deleteById(req.params.id);
-    res.json(req.account);
+    const deleteAccount = await model.deleteById(req.params.id);
+    res.status(200).json({ message: "Account has been deleted" });
   } catch (err) {
     next(err);
   }
 });
 
 router.use((err, req, res, next) => {
-  res.status(err.status || 404).json({
-    message: err.message,
+  // eslint-disable-line
+  // DO YOUR MAGIC
+  res.status(500).json({
+    message: "something went wrong",
+    errorMessage: err.message,
   });
 });
 

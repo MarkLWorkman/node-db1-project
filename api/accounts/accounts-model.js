@@ -1,26 +1,43 @@
 const db = require("../../data/db-config");
-const { get } = require("./accounts-router");
 
 const getAll = () => {
+  // DO YOUR MAGIC
   return db("accounts");
 };
 
 const getById = (id) => {
+  // DO YOUR MAGIC
   return db("accounts").where("id", id).first();
 };
 
 const create = async (account) => {
-  const [id] = await db("accounts").insert(account);
-  return getById(id);
+  // DO YOUR MAGIC
+  return db("accounts")
+    .insert(account)
+    .then(([id]) => {
+      return db("accounts").where("id", id).first();
+    });
 };
 
 const updateById = async (id, account) => {
-  await db("accounts").where("id", id).update(account);
-  return getById(id);
+  // DO YOUR MAGIC
+  const POSTID = id;
+  return db("accounts")
+    .where("id", id)
+    .update(account)
+    .then(() => {
+      return db("accounts").where("id", POSTID).first();
+    });
 };
 
 const deleteById = (id) => {
-  return db("accounts").where("id", id).del();
+  // DO YOUR MAGIC
+  return db("accounts")
+    .where("id", id)
+    .del()
+    .then(() => {
+      return db("accounts");
+    });
 };
 
 module.exports = {
